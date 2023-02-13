@@ -44,12 +44,15 @@ Future<void> generateSupportLocale(
   List<dynamic> supportLocalse,
   String defaultLocale,
   String path,
+  bool onlyLangCode,
 ) async {
   final file = File("lib/utils/translate_plugin.dart");
   await file.create(recursive: true);
   final _supportLocalse = supportLocalse.map((e) {
     final locale = e.split("-");
-    return '    Locale("${locale.first}", "${locale.last}")';
+    return onlyLangCode
+        ? '    Locale("${locale.first}")'
+        : '    Locale("${locale.first}", "${locale.last}")';
   }).join(",\n");
   final _defaultLocale = defaultLocale.split("-");
   final template = supportLocaleTemplate
@@ -59,7 +62,9 @@ Future<void> generateSupportLocale(
       )
       .replaceFirst(
         "{{DEFAULT_LOCALE}}",
-        'Locale("${_defaultLocale.first}", "${_defaultLocale.last}")',
+        onlyLangCode
+            ? 'Locale("${_defaultLocale.first}")'
+            : 'Locale("${_defaultLocale.first}", "${_defaultLocale.last}")',
       )
       .replaceFirst(
         "{{PATH}}",
@@ -93,6 +98,8 @@ void main(List<String> arguments) async {
 
   final yaml = Parser.fromPathToMap(File("pubspec.yaml").path);
 
+  final onlyLanguageCode =
+      yaml["translate_plugin"]["onlyLanguageCode"] ?? false;
   final languages = yaml["translate_plugin"]["langs"];
   final defaultLanguage = yaml["translate_plugin"]["default"];
   final apiKey = yaml["translate_plugin"]["api-key"] ??
@@ -145,5 +152,6 @@ void main(List<String> arguments) async {
     languages,
     defaultLanguage,
     path,
+    onlyLanguageCode,
   );
 }

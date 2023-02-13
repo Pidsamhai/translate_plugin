@@ -2,13 +2,13 @@ import 'package:flutter/widgets.dart';
 
 abstract class TranslatePlugin {
   static const supportLocales = [
-    Locale("en", "US"),
-    Locale("th", "TH"),
-    Locale("ms", "MS"),
-    Locale("zh", "ZH"),
+    Locale("en"),
+    Locale("th"),
+    Locale("ms"),
+    Locale("zh"),
   ];
 
-  static const defaultLocales = Locale("en", "US");
+  static const defaultLocales = Locale("en");
 
   static const path = "assets/translations";
 }

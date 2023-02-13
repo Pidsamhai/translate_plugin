@@ -88,9 +88,10 @@ flutter:
 translate_plugin: 
   path: assets/translations
   langs:
-    - en-US
-    - th-TH
-    - ms-MS
-    - zh-ZH
-  default: en-US
+    - en
+    - th
+    - ms
+    - zh
+  default: en
+  onlyLanguageCode: true
 
