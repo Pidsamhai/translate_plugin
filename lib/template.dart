@@ -12,7 +12,7 @@ abstract class {{CLASS_NAME}} {
 
   static const path = "{{PATH}}";
 
-  Locale get systemOrDefaultLocale {
+  static Locale get systemOrDefaultLocale {
     final systemLocale = WidgetsBinding.instance.window.locale;
     try {
       return TranslatePlugin.supportLocales.firstWhere(
