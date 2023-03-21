@@ -2,13 +2,13 @@ import 'package:easy_localization/easy_localization.dart'
     hide TextTranslateExtension, StringTranslateExtension;
 import 'package:flutter/material.dart';
 import 'package:translate_plugin_example/utils/translate_plugin.dart';
-import 'ext.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
   runApp(
     EasyLocalization(
+      startLocale: TranslatePlugin.systemOrDefaultLocale,
       supportedLocales: TranslatePlugin.supportLocales,
       path: TranslatePlugin.path,
       fallbackLocale: TranslatePlugin.defaultLocales,
@@ -40,7 +40,7 @@ class HomePage extends StatelessWidget {
                   .map(
                     (e) => TextButton(
                       onPressed: () => context.setLocale(e),
-                      child: Text("${e.languageCode}-${e.countryCode}"),
+                      child: Text(e.languageCode),
                     ),
                   )
                   .toList(),

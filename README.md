@@ -30,12 +30,19 @@ translate_plugin:
   path: assets/translations // output path
   api-key: // for auto translate from google translate
   skip-translate: // for skip some language when auto translate
+  plugin: 
+    path: lib/localization // generate plugin output path
+    name:
+      file: translate_plugin // file name
+      class: TranslatePlugin // class name
   langs:  // support locale
     - en-US
     - th-TH
     - ms-MS
     - zh-ZH
   default: en-US
+  onlyLanguageCode: true // use only language code
+  extension: false // use generate extension ex "hello".tr
 ```
 
 - Generate Utilclass

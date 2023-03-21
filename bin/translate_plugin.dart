@@ -7,6 +7,7 @@ import 'package:glob/glob.dart';
 import 'package:glob/list_local_fs.dart';
 import 'package:translate_plugin/parser.dart';
 import 'package:translate_plugin/template.dart';
+import 'package:translate_plugin/template.dart' as defaultConfig;
 
 import 'translate_plugin_translate.dart';
 
@@ -40,13 +41,17 @@ List<String> matchString(String input) {
       .toList();
 }
 
-Future<void> generateSupportLocale(
-  List<dynamic> supportLocalse,
-  String defaultLocale,
-  String path,
-  bool onlyLangCode,
-) async {
-  final file = File("lib/utils/translate_plugin.dart");
+Future<void> generateSupportLocale({
+  required List<dynamic> supportLocalse,
+  required String defaultLocale,
+  required String path,
+  required bool onlyLangCode,
+  required String pluginPath,
+  required String pluginFileName,
+  required String pluginClassName,
+  required bool withExtension,
+}) async {
+  final file = File("$pluginPath/$pluginFileName.dart");
   await file.create(recursive: true);
   final _supportLocalse = supportLocalse.map((e) {
     final locale = e.split("-");
@@ -69,6 +74,14 @@ Future<void> generateSupportLocale(
       .replaceFirst(
         "{{PATH}}",
         path,
+      )
+      .replaceFirst(
+        "{{CLASS_NAME}}",
+        pluginClassName,
+      )
+      .replaceAll(
+        "{{EXTENSION}}",
+        withExtension ? defaultConfig.extension : "",
       );
   file.writeAsString(template);
 }
@@ -98,11 +111,25 @@ void main(List<String> arguments) async {
 
   final yaml = Parser.fromPathToMap(File("pubspec.yaml").path);
 
+  final pluginPath =
+      yaml["translate_plugin"]?["plugin"]?["path"] ?? defaultConfig.pluginPath;
+  final pluginClassFileName = yaml["translate_plugin"]?["plugin"]?["name"]
+          ?["file"] ??
+      defaultConfig.pluginClassFileName;
+  final pluginClassName = yaml["translate_plugin"]?["plugin"]?["name"]
+          ?["class"] ??
+      defaultConfig.pluginClassName;
+
+  final withExtension = yaml["translate_plugin"]?["extension"] ?? false;
+
   final onlyLanguageCode =
-      yaml["translate_plugin"]["onlyLanguageCode"] ?? false;
-  final languages = yaml["translate_plugin"]["langs"];
-  final defaultLanguage = yaml["translate_plugin"]["default"];
-  final apiKey = yaml["translate_plugin"]["api-key"] ??
+      yaml["translate_plugin"]?["onlyLanguageCode"] ?? false;
+  final languages = yaml["translate_plugin"]?["langs"] ?? [];
+  final defaultLanguage = yaml["translate_plugin"]?["default"];
+  if (languages == null || defaultLanguage == null) {
+    throw Exception("required language, defaultLanguage");
+  }
+  final apiKey = yaml["translate_plugin"]?["api-key"] ??
       arguments
           .firstWhere(
             (element) => element.startsWith("--api-key"),
@@ -110,7 +137,7 @@ void main(List<String> arguments) async {
           )
           .split("=")
           .last;
-  final path = yaml["translate_plugin"]["path"];
+  final path = yaml["translate_plugin"]?["path"];
 
   print("Languages: $languages");
   print("Default Language: $defaultLanguage");
@@ -149,9 +176,13 @@ void main(List<String> arguments) async {
   }
 
   await generateSupportLocale(
-    languages,
-    defaultLanguage,
-    path,
-    onlyLanguageCode,
+    supportLocalse: languages,
+    defaultLocale: defaultLanguage,
+    path: path,
+    onlyLangCode: onlyLanguageCode,
+    pluginPath: pluginPath,
+    pluginClassName: pluginClassName,
+    pluginFileName: pluginClassFileName,
+    withExtension: withExtension,
   );
 }

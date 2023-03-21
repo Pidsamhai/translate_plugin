@@ -87,6 +87,11 @@ flutter:
 
 translate_plugin: 
   path: assets/translations
+  plugin: 
+    path: lib/utils
+    name:
+      file: translate_plugin
+      class: TranslatePlugin
   langs:
     - en
     - th
@@ -94,4 +99,5 @@ translate_plugin:
     - zh
   default: en
   onlyLanguageCode: true
+  extension: true
 
